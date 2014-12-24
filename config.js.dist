@@ -1,0 +1,8 @@
+exports.config = {
+    url:          'http://m.ok.ru/',
+    albom_url:    'ссылка на необходимый альбом в интерфейсе мобильных одноклассников',
+    user:         'логин на одноклассниках',
+    pass:         'пароль на одноклассниках',
+
+    user_agent: 'Mozilla/5.0 (Linux; Android 4.2; Zera_F Build/JDQ39) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.131 Mobile Safari/537.36'
+};
