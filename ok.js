@@ -1,6 +1,6 @@
 var config = require('config').config;
 var casper = require('casper').create({
-    verbose:      true,
+    verbose:      false,
     logLevel:     "info",
     waitTimeout:  20000,
     viewportSize: {width: 480, height: 800},
@@ -41,12 +41,13 @@ casper.thenOpen('http://instagram.com/old_vl', function () {
     var js = this.evaluate(function () {
         return document;
     });
-    photos = js.all[0].outerHTML.match(/instagram.com\/p\/([\w\d]+)/igm);
+    photos = js.all[0].outerHTML.match(/instagram.com\/p\/([\-\._\w\d]+)/igm);
 });
 
 casper.then(function () {
     debugger;
     photos = photos.slice(0,3);
+
     casper.each(photos, function (self, url) {
         casper.echo("Getting entries for keyword " + url + "..");
 
@@ -78,7 +79,7 @@ casper.then(function () {
             }
 
             if (text.length > 0 && src.length > 0) {
-                var filename = src.match(/([-\._\w]+)$/gi);
+                var filename = src.match(/([\-\._\w\d]+)$/gi);
                 casper.then(function () {
                     this.download(src, 'downloads/' + filename[0]);
                 });
