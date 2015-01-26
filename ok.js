@@ -10,7 +10,7 @@ var casper = require('casper').create({
         loadPlugins: false         // use these settings
     }
 });
-
+var photos_cnt = 3;
 var photos = [];
 
 casper.on('remote.message', function (message) {
@@ -29,12 +29,12 @@ casper.on('remote.alert', function (message) {
 
 // Авторизация
 casper.start(config.url, function () {
-     this.fillSelectors(
-         '#content form',
-         {
-             '#field_login':    config.user,
-             '#field_password': config.pass
-         }, true);
+    this.fillSelectors(
+        '#content form',
+        {
+            '#field_login':    config.user,
+            '#field_password': config.pass
+        }, true);
 });
 
 casper.thenOpen('http://instagram.com/old_vl', function () {
@@ -45,11 +45,10 @@ casper.thenOpen('http://instagram.com/old_vl', function () {
 });
 
 casper.then(function () {
-    debugger;
-    photos = photos.slice(0,3);
+    photos = photos.slice(0, photos_cnt);
 
     casper.each(photos, function (self, url) {
-        casper.echo("Getting entries for keyword " + url + "..");
+        casper.echo("Ссылка на обработку: " + url, 'PARAMETER');
 
         casper.thenOpen('http://' + url, function () {
             debugger;
@@ -71,10 +70,11 @@ casper.then(function () {
                 }
             }
             var text = this.evaluate(fff, '.caption-text');
-            this.echo(src);
+            this.echo(src, 'COMMENT');
             try {
                 text = text[0].innerHTML;
-            } catch  (e) {
+            }
+            catch (e) {
                 text = 'From http://instagram.com/old_vl';
             }
 
@@ -85,7 +85,7 @@ casper.then(function () {
                 });
 
                 casper.thenOpen(config.albom_url, function () {
-                    this.echo(this.getTitle());
+                    this.echo(this.getTitle(), 'COMMENT');
                     this.captureSelector('yoursitelist2.png', 'body');
                 });
 
@@ -94,7 +94,6 @@ casper.then(function () {
                 });
 
                 casper.then(function () {
-                    debugger;
                     this.fillSelectors(
                         'form.js-sm-upload-form',
                         {
@@ -106,12 +105,13 @@ casper.then(function () {
 
                 casper.then(function () {
                     this.waitForSelector('#content form', function () {
-                        debugger
-                        console.log(text.replace(/\s@([-_\.\w\d]+)/gi, ' http://instagram.com/$1').substr(0, 255));
+                        var msg = text.replace(/\s@([-_\.\w\d]+)/gi, ' http://instagram.com/$1').substr(0, 255)
+                        casper.echo(msg, 'INFO');
+
                         this.fillSelectors(
                             '#content form',
                             {
-                                '#field_msg': text.replace(/\s@([-_\.\w\d]+)/gi, ' http://instagram.com/$1').substr(0, 255)
+                                '#field_msg': msg
                             }, true
                         );
                         this.captureSelector('yoursitelist4.png', 'body');
@@ -129,8 +129,7 @@ casper.then(function () {
 });
 
 
-
 casper.run(function () {
     // echo results in some pretty fashion
-    this.echo('Done').exit();
+    this.echo('Done', 'GREEN_BAR').exit();
 });
